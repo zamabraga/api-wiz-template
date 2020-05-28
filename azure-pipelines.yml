@@ -73,12 +73,13 @@ stages:
       - task: SonarCloudPublish@1
         inputs:
           pollingTimeoutSec: '300'
-        condition: succeededOrFailed()
+        continueOnError: true
 
       - script: |
           dotnet tool install dotnet-reportgenerator-globaltool --tool-path .
           ./reportgenerator -reports:$(Build.SourcesDirectory)/**/coverage.*.xml -targetdir:$(Build.SourcesDirectory)/CodeCoverage "-reporttypes:HtmlInline_AzurePipelines;HtmlInline_AzurePipelines_Dark;Cobertura"
         displayName: Create Code coverage report
+        continueOnError: true
 
       - task: PublishCodeCoverageResults@1
         displayName: 'Publish code coverage'
@@ -87,6 +88,7 @@ stages:
           summaryFileLocation: '$(Build.SourcesDirectory)/CodeCoverage/*.xml'
           reportDirectory: '$(Build.SourcesDirectory)/CodeCoverage'
         condition: succeededOrFailed()
+        continueOnError: true
 
       - task: DotNetCoreCLI@2
         displayName: Publish
